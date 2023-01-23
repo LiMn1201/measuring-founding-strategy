@@ -26,7 +26,7 @@ class website_text:
         else:
             return ""
 
-        
+    #清洗文本    
     def clean_page_text(self, text, skip_memory_error = False):
         #initial_text = text
         try:
@@ -49,7 +49,7 @@ class website_text:
             else:
                 raise e
 
-
+    #清除pdf文档
     def is_html_page(self,text):
         #remove downloaded PDFs, this is rarely used, since most are deleted when the
         #algorithm filters through bad_mimes.
@@ -66,7 +66,7 @@ class website_text:
         return True
 
 
-    
+    #计算长度后剔除小于50或等于1706的文本
     def is_valid_website(self):
         text_len = len(self.get_website_text())
 

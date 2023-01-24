@@ -16,17 +16,18 @@ class website_text:
     def __init__(self, path, domain, year, incyear = None, skip_memory_error = False):
         mimetypes.init()
         domain = data_reader.clean_domain_url(domain)
-        self.texts = self.load_domain(path, domain, year, incyear , skip_memory_error = skip_memory_error)
+        self.texts = self.load_domain(path, domain, year, incyear , skip_memory_error = skip_memory_error) 
+        #为什么texts在下面没有定义过？ load_domain在下面做了定义
         
 
-
+    #在字符之间插入空格
     def get_website_text(self):
         if self.texts is not None:
             return " ".join(self.texts)
         else:
             return ""
 
-    #清洗文本    
+    #清洗文本，去掉特殊标点符号    
     def clean_page_text(self, text, skip_memory_error = False):
         #initial_text = text
         try:
@@ -52,7 +53,7 @@ class website_text:
     #清除pdf文档
     def is_html_page(self,text):
         #remove downloaded PDFs, this is rarely used, since most are deleted when the
-        #algorithm filters through bad_mimes.
+        #algorithm filters through bad_mimes. #所以应该在load_page后面
         if text[0:3]=="PDF" or text[1:4] == "PDF":
             return False
 
@@ -77,15 +78,15 @@ class website_text:
         else:
             return True
 
-        
+    #对于爬取的文本进行格式的处理和清洗    
     def load_page(self, page_file_path, skip_memory_error = False, char_limit=1000000):
         try:
             bad_mimes = ['application/pdf','text/x-perl','image/jpeg','application/x-msdos-program',
                          'image/gif', 'text/vcard','application/msword','application/xml',
                          'video/x-ms-wmv', 'text/css','text/vnd.sun.j2me.app-descriptor']            
             
-            (mime, x) = mimetypes.guess_type(page_file_path)
-
+            (mime, x) = mimetypes.guess_type(page_file_path) #为什么这个就简化后面用了mime呢？
+            #把其他类型的数据剔除掉
             if mime is not None:
                 #remove all undesired types of data that is not text to include into NLP
                 if mime in bad_mimes:
@@ -96,7 +97,7 @@ class website_text:
             if mime not in ['text/html','text/plain'] and mime is not None:
                 #pdb.set_trace()
                 pass
-            
+            #爬取文本
             f = open(page_file_path)
             html = f.read()
             soup = BeautifulSoup(html,"html.parser")
@@ -115,7 +116,7 @@ class website_text:
                 return ""
             else:
                 raise e
-    
+    #生成路径名
     def load_domain(self, path, domain, year=None, incyear = None, force_download=False,skip_memory_error = False):
         clean_domain = data_reader.clean_domain_url(domain)
         root_folder = "{0}/{1}".format(path,clean_domain).replace("//","/")
@@ -123,15 +124,15 @@ class website_text:
         if year is None:
             file_folder = root_folder
         else: 
-            file_folder = "{0}/{1}/{2}".format(path,clean_domain, year).replace("//","/")
+            file_folder = "{0}/{1}/{2}".format(path,clean_domain, year).replace("//","/")#路径名加上year
 
         
         
-        if  os.path.exists(root_folder) is False or os.path.exists(file_folder) is False or os.path.isdir(file_folder) is False:
-            if force_download is True:
+        if  os.path.exists(root_folder) is False or os.path.exists(file_folder) is False or os.path.isdir(file_folder) is False: #如果路径是不正确的
+            if force_download is True: #force_download在下面做了定义
                 #depends on whether it is startup download of public download
-                pdb.set_trace()
-                download_year = year if year is not None else incyear
+                pdb.set_trace() #程序运行到这里暂停
+                download_year = year if year is not None else incyear #对download_year进行赋值
                 download_year = int(download_year)
                 self.force_download(root_folder , domain, download_year)
             else:
@@ -150,7 +151,7 @@ class website_text:
 
     
     def force_download(self,path, domain, year):
-        year_folder = year is not None
+        year_folder = year is not None #year非空
 
         crawler = waybackmachine_crawler(website = domain, output_folder = path , year_folder = year_folder)
         crawler.crawl_from_date(year, 12, 31)

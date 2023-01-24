@@ -139,10 +139,10 @@ class website_text:
                 return None
             
         files = []
-        for file_name in os.listdir(file_folder):
+        for file_name in os.listdir(file_folder): #用listdir获取file_folder下所有文件的路径
             text = self.load_page(file_folder + "/" + file_name, skip_memory_error = skip_memory_error)
-            if self.is_html_page(text):
-                text = re.sub(r"\s+"," ",text)
+            if self.is_html_page(text): #如果text不是pdf文件的话
+                text = re.sub(r"\s+"," ",text) r"\s+" #对应的内容替换成空格
                 files.append(text)
 
         return files
